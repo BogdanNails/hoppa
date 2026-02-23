@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="130" viewBox="0 0 420 130">
+  <rect width="420" height="130" rx="16" fill="white"/>
+  <g font-family="Arial Black, Arial" font-size="74" font-weight="900">
+    <text x="24" y="92" fill="#ef4aa8">h</text>
+    <text x="82" y="92" fill="#ff9f43">o</text>
+    <text x="146" y="92" fill="#ffd33d">p</text>
+    <text x="206" y="92" fill="#61c452">p</text>
+    <text x="268" y="92" fill="#4a90e2">a</text>
+  </g>
+  <text x="22" y="118" font-family="Arial" font-size="22" font-style="italic" fill="#1f1f28">copii fericiti, parinti linistiti</text>
+  <circle cx="360" cy="30" r="12" fill="#ef4aa8"/>
+  <circle cx="388" cy="52" r="10" fill="#61c452"/>
+  <circle cx="342" cy="54" r="9" fill="#ff9f43"/>
+</svg>
