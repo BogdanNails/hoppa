@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Carduri de fidelitate</h1>
+<form method="get" class="row"><input name="q" placeholder="Cauta copil"><button class="btn">Cauta</button></form>
+<table>
+  <tr><th>Nr card</th><th>Nume</th><th>Nastere</th><th>Intrari (ultimele 10)</th><th>Intrare gratis</th></tr>
+  {% for c, entries, reward in rows %}
+  <tr>
+    <td>{{ c.card_number }}</td><td>{{ c.child_name }}</td><td>{{ c.birth_date }}</td>
+    <td>{% for e in entries %}<div>{{ e.visit_date }} - {{ format_duration(e.duration_minutes) }}</div>{% endfor %}</td>
+    <td>{% if reward == 9999 %}Nelimitat{% elif reward %}{{ reward }} min{% else %}-{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

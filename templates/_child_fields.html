@@ -1,0 +1,17 @@
+<div class="grid">
+  <label>Nume copil <input name="main_name" required></label>
+  <label>Telefon <input name="main_phone"></label>
+  <label><input type="checkbox" name="main_accompanied"> insotit</label>
+  <label><input type="checkbox" name="main_at_table"> la masa</label>
+  <label><input type="checkbox" name="main_wants_card" onchange="toggleCardFields(this,'main')"> Doreste card fidelitate</label>
+  <label><input type="checkbox" name="main_has_card"> Are card fidelitate</label>
+  <label>Nume cautare card <input onblur="findLoyalty(this.value, 'main')"></label>
+  <input type="hidden" name="main_loyalty_id">
+  <div id="main_card_extra" class="hidden subgrid">
+    <label>Data nasterii <input type="date" name="main_birth_date"></label>
+    <label>Acord poze
+      <select name="main_photo_consent"><option value="yes">Da</option><option value="no">Nu</option></select>
+    </label>
+  </div>
+  <label>Sosete perechi <input type="number" min="0" name="main_socks" value="0"></label>
+</div>
