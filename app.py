@@ -33,6 +33,9 @@ class LoyaltyCard(db.Model):
     child_name = db.Column(db.String(120), nullable=False)
     birth_date = db.Column(db.Date, nullable=False)
     photo_consent = db.Column(db.Boolean, default=False)
+    phone = db.Column(db.String(40), nullable=True)
+    card_group_key = db.Column(db.String(40), nullable=True)
+    card_order_in_group = db.Column(db.Integer, nullable=True)
     birthday_free_used_year = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -181,6 +184,7 @@ def find_loyalty():
             "birth_date": card.birth_date.isoformat(),
             "photo_consent": card.photo_consent,
             "card_number": card.card_number,
+            "phone": card.phone,
         }
     )
 
@@ -190,43 +194,46 @@ def checkin():
     group = next_group_id()
     now = datetime.now()
 
-    def create_visit(prefix: str, parent_id: Optional[int] = None):
+    def validate_full_name(value: str) -> bool:
+        parts = [p for p in value.strip().split(" ") if p]
+        return len(parts) >= 2
+
+    main_phone = request.form.get("main_phone", "").strip()
+    card_order = 0
+    card_group_key = f"CARD-G{group}-{now.strftime('%Y%m%d')}"
+
+    def create_visit(prefix: str, parent_id: Optional[int] = None, inherited_phone: Optional[str] = None):
+        nonlocal card_order
         name = request.form.get(f"{prefix}_name", "").strip()
         if not name:
             return None
-        phone = request.form.get(f"{prefix}_phone", "").strip()
+        if not validate_full_name(name):
+            flash(f"Numele pentru {prefix} trebuie sa fie in format 'Nume Prenume'.", "error")
+            return None
+
+        phone = request.form.get(f"{prefix}_phone", "").strip() or (inherited_phone or "")
         accompanied = bool(request.form.get(f"{prefix}_accompanied"))
         at_table = bool(request.form.get(f"{prefix}_at_table"))
         status = phone if phone else ("insotit" if accompanied else "la masa" if at_table else "-")
         socks = int(request.form.get(f"{prefix}_socks") or 0)
-        has_card = bool(request.form.get(f"{prefix}_has_card"))
         wants_card = bool(request.form.get(f"{prefix}_wants_card"))
         used_birthday_free = False
         loyalty_minutes = None
         loyalty_id = None
 
-        if has_card:
-            loyalty_id = request.form.get(f"{prefix}_loyalty_id") or None
-            if loyalty_id:
-                loyalty_id = int(loyalty_id)
-                card = LoyaltyCard.query.get(loyalty_id)
-                if card:
-                    reward = compute_loyalty_reward(card.id)
-                    if reward:
-                        loyalty_minutes = reward
-                    if is_birthday_window(card.birth_date, now.date()) and card.birthday_free_used_year != now.year:
-                        used_birthday_free = True
-                        card.birthday_free_used_year = now.year
-
         if wants_card:
             birth = request.form.get(f"{prefix}_birth_date")
             consent = request.form.get(f"{prefix}_photo_consent") == "yes"
             if birth:
+                card_order += 1
                 card = LoyaltyCard(
-                    card_number=f"HOP-{int(datetime.utcnow().timestamp())}-{name[:2].upper()}",
+                    card_number=f"HOP-{group:04d}-{card_order:02d}",
                     child_name=name,
                     birth_date=parse_date(birth),
                     photo_consent=consent,
+                    phone=phone if phone else main_phone,
+                    card_group_key=card_group_key,
+                    card_order_in_group=card_order,
                 )
                 db.session.add(card)
                 db.session.flush()
@@ -248,11 +255,16 @@ def checkin():
 
     parent = create_visit("main")
     if not parent:
-        flash("Numele copilului principal este obligatoriu.", "error")
+        flash("Numele copilului principal este obligatoriu si trebuie sa fie 'Nume Prenume'.", "error")
         return redirect(url_for("index"))
     db.session.flush()
+
     for i in range(1, 6):
-        create_visit(f"sibling{i}", parent.id)
+        sib_name = request.form.get(f"sibling{i}_name", "").strip()
+        if sib_name:
+            created = create_visit(f"sibling{i}", parent.id, inherited_phone=main_phone)
+            if created is None:
+                return redirect(url_for("index"))
 
     db.session.commit()
     flash("Check-in salvat.", "success")

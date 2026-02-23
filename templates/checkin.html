@@ -14,13 +14,15 @@
 
 <form id="extraBox" class="card hidden" method="post" action="{{ url_for('extra_payment') }}">
   <h3>Adaugare bani</h3>
-  <label>Suma <input name="amount" type="number" step="0.01" required></label>
-  <label>Metoda plata
-    <select name="payment_method"><option value="cash">cash</option><option value="card">card</option><option value="mixt">mixt</option></select>
-  </label>
-  <label>Ce achita
-    <select name="reason"><option value="restanta">restanta</option><option value="baloane">baloane</option><option value="sosete">sosete</option></select>
-  </label>
+  <div class="grid two-col">
+    <label>Suma <input name="amount" type="number" step="0.01" required></label>
+    <label>Metoda plata
+      <select name="payment_method"><option value="cash">cash</option><option value="card">card</option><option value="mixt">mixt</option></select>
+    </label>
+    <label>Ce achita
+      <select name="reason"><option value="restanta">restanta</option><option value="baloane">baloane</option><option value="sosete">sosete</option></select>
+    </label>
+  </div>
   <button class="btn">Salveaza</button>
 </form>
 {% endblock %}
