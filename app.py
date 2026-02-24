@@ -208,7 +208,7 @@ def checkin():
         if not name:
             return None
         if not validate_full_name(name):
-            flash(f"Numele pentru {prefix} trebuie sa fie in format 'Nume Prenume'.", "error")
+            flash("Trebuie sa completezi nume si prenume, nu doar un singur nume.", "error")
             return None
 
         phone = request.form.get(f"{prefix}_phone", "").strip() or (inherited_phone or "")
@@ -255,7 +255,7 @@ def checkin():
 
     parent = create_visit("main")
     if not parent:
-        flash("Numele copilului principal este obligatoriu si trebuie sa fie 'Nume Prenume'.", "error")
+        flash("Trebuie sa completezi nume si prenume, nu doar un singur nume.", "error")
         return redirect(url_for("index"))
     db.session.flush()
 
