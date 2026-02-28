@@ -164,10 +164,28 @@ def current_day_range():
     return start, end
 
 
+def extract_sibling_prefills(form_data: dict):
+    items = []
+    for i in range(1, 6):
+        prefix = f"sibling{i}"
+        name = (form_data.get(f"{prefix}_name") or "").strip()
+        wants_card = bool(form_data.get(f"{prefix}_wants_card"))
+        birth_date = form_data.get(f"{prefix}_birth_date") or ""
+        photo_consent = form_data.get(f"{prefix}_photo_consent") or "yes"
+        if name or wants_card or birth_date:
+            items.append({
+                "name": name,
+                "wants_card": wants_card,
+                "birth_date": birth_date,
+                "photo_consent": photo_consent,
+            })
+    return items
+
+
 @app.route("/")
 def index():
     cards = LoyaltyCard.query.order_by(LoyaltyCard.child_name).all()
-    return render_template("checkin.html", cards=cards)
+    return render_template("checkin.html", cards=cards, old_form={}, sibling_prefills=[])
 
 
 @app.post("/api/loyalty/find")
@@ -209,7 +227,7 @@ def checkin():
             return None
         if not validate_full_name(name):
             flash("Trebuie sa completezi nume si prenume, nu doar un singur nume.", "error")
-            return None
+            return False
 
         phone = request.form.get(f"{prefix}_phone", "").strip() or (inherited_phone or "")
         accompanied = bool(request.form.get(f"{prefix}_accompanied"))
@@ -254,17 +272,20 @@ def checkin():
         return v
 
     parent = create_visit("main")
-    if not parent:
-        flash("Trebuie sa completezi nume si prenume, nu doar un singur nume.", "error")
-        return redirect(url_for("index"))
+    if parent is False or not parent:
+        cards = LoyaltyCard.query.order_by(LoyaltyCard.child_name).all()
+        old_form = request.form.to_dict(flat=True)
+        return render_template("checkin.html", cards=cards, old_form=old_form, sibling_prefills=extract_sibling_prefills(old_form))
     db.session.flush()
 
     for i in range(1, 6):
         sib_name = request.form.get(f"sibling{i}_name", "").strip()
         if sib_name:
             created = create_visit(f"sibling{i}", parent.id, inherited_phone=main_phone)
-            if created is None:
-                return redirect(url_for("index"))
+            if created is False:
+                cards = LoyaltyCard.query.order_by(LoyaltyCard.child_name).all()
+                old_form = request.form.to_dict(flat=True)
+                return render_template("checkin.html", cards=cards, old_form=old_form, sibling_prefills=extract_sibling_prefills(old_form))
 
     db.session.commit()
     flash("Check-in salvat.", "success")

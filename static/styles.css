@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&display=swap');
 :root{
   --bg:#ffa940;
   --surface:#ffffff;
@@ -16,7 +17,7 @@
 body{
   margin:0;
   color:var(--ink);
-  font-family:Inter,"Segoe UI",Arial,sans-serif;
+  font-family:"Cardone","Cardo","Times New Roman",serif;
   background:
     radial-gradient(circle at 5% 10%, #ffc56f 0%, transparent 22%),
     radial-gradient(circle at 95% 0%, #ffbf63 0%, transparent 18%),
@@ -84,3 +85,6 @@ h1,h2,h3{color:#3b2d48;margin:0 0 12px}
   .two-col,.subgrid{grid-template-columns:1fr}
   .topbar{padding:10px 12px;flex-direction:column;gap:8px;align-items:flex-start}
 }
+
+.checkline{display:flex;flex-direction:row;align-items:center;gap:14px;justify-content:flex-start}
+.checkline input[type="checkbox"]{margin-right:14px;transform:scale(1.08)}

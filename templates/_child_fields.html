@@ -1,17 +1,26 @@
 <div class="grid two-col">
-  <label>Nume copil (Nume Prenume) <input name="main_name" required placeholder="Ex: Popescu Andrei"></label>
-  <label>Telefon <input name="main_phone"></label>
+  <label>Nume copil (Nume Prenume)
+    <input name="main_name" required placeholder="Ex: Popescu Andrei" value="{{ old_form.get('main_name','') }}">
+  </label>
+  <label>Telefon
+    <input name="main_phone" value="{{ old_form.get('main_phone','') }}">
+  </label>
 
-  <label><input type="checkbox" name="main_accompanied"> insotit</label>
-  <label><input type="checkbox" name="main_at_table"> la masa</label>
+  <label class="checkline"><input type="checkbox" name="main_accompanied" {% if old_form.get('main_accompanied') %}checked{% endif %}> Insotit</label>
+  <label class="checkline"><input type="checkbox" name="main_at_table" {% if old_form.get('main_at_table') %}checked{% endif %}> La masa</label>
 
-  <label><input type="checkbox" name="main_wants_card" onchange="toggleCardFields(this,'main')"> Doreste card fidelitate</label>
-  <label>Sosete perechi <input type="number" min="0" name="main_socks" value="0"></label>
+  <label class="checkline"><input type="checkbox" name="main_wants_card" onchange="toggleCardFields(this,'main')" {% if old_form.get('main_wants_card') %}checked{% endif %}> Doreste card de fidelitate</label>
+  <label>Sosete perechi (per grup)
+    <input type="number" min="0" name="main_socks" value="{{ old_form.get('main_socks','0') }}">
+  </label>
 
-  <div id="main_card_extra" class="hidden subgrid">
-    <label>Data nasterii <input type="date" name="main_birth_date"></label>
+  <div id="main_card_extra" class="subgrid {% if not old_form.get('main_wants_card') %}hidden{% endif %}">
+    <label>Data nasterii <input type="date" name="main_birth_date" value="{{ old_form.get('main_birth_date','') }}"></label>
     <label>Acord poze
-      <select name="main_photo_consent"><option value="yes">Da</option><option value="no">Nu</option></select>
+      <select name="main_photo_consent">
+        <option value="yes" {% if old_form.get('main_photo_consent','yes')=='yes' %}selected{% endif %}>Da</option>
+        <option value="no" {% if old_form.get('main_photo_consent')=='no' %}selected{% endif %}>Nu</option>
+      </select>
     </label>
   </div>
 </div>
