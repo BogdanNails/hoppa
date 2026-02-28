@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Checkout grup</h1>
+<div class="card">
+  {% if same %}
+    <p>Copiii au stat {{ format_duration(sorted_durations[0][1]) }}.</p>
+  {% else %}
+    <ul>{% for name, d in sorted_durations %}<li>{{ name }} - {{ format_duration(d) }}</li>{% endfor %}</ul>
+  {% endif %}
+  <form method="post" class="grid">
+    <label>Suma achitata <input type="number" step="0.01" name="amount"></label>
+    <label>Metoda
+      <select name="payment_method"><option value="cash">cash</option><option value="card">card</option><option value="mixt">mixt</option></select>
+    </label>
+    <label>Cash <input type="number" step="0.01" name="paid_cash"></label>
+    <label>Card <input type="number" step="0.01" name="paid_card"></label>
+    <label>Sabii balon <input type="number" min="0" name="swords" value="0"></label>
+    <label>Flori balon <input type="number" min="0" name="flowers" value="0"></label>
+    <button class="btn">Finalizeaza checkout</button>
+  </form>
+</div>
+{% endblock %}

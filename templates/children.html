@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Lista copii azi</h1>
+<form class="row" method="get"><input name="q" placeholder="cauta copil"><button class="btn">Cauta</button></form>
+<form method="post" action="{{ url_for('end_of_day') }}"><button class="btn">Sfarsit zi</button></form>
+{% for gid, visits in grouped.items() %}
+<div class="card">
+  <h3>Grup #{{ gid }}</h3>
+  <table>
+    <tr><th>Nume</th><th>Tel/status</th><th>Intrare</th><th>Iesire</th><th>Durata</th><th>Achitat</th><th>Plata</th><th>Actiuni</th></tr>
+    {% for v in visits %}
+      {% set mins = ((v.checkout_time or now) - v.checkin_time).total_seconds()//60 - v.paused_minutes %}
+      <tr>
+        <td>{{ v.child_name }} {% if v.parent_visit_id %}(frate){% endif %}</td>
+        <td>{{ v.phone_or_status }}</td>
+        <td>{{ v.checkin_time.strftime('%H:%M') }}</td>
+        <td>{{ v.checkout_time.strftime('%H:%M') if v.checkout_time else '-' }}</td>
+        <td>{{ format_duration(mins|int if mins>0 else 0) if not v.not_stayed else 'nu a stat' }}</td>
+        <td>{{ v.amount_paid }}</td>
+        <td>{{ v.payment_method or '-' }}</td>
+        <td class="actions">
+          <form method="post" action="{{ url_for('checkout', visit_id=v.id) }}"><button class="btn tiny">Check out</button></form>
+          <form method="post" action="{{ url_for('toggle_pause', visit_id=v.id) }}"><button class="btn tiny secondary">{{ 'Continuare' if v.paused else 'Pauza' }}</button></form>
+          <form method="post" action="{{ url_for('recheckin', visit_id=v.id) }}"><button class="btn tiny">Check in</button></form>
+          <form method="post" action="{{ url_for('mark_not_stayed', visit_id=v.id) }}"><button class="btn tiny danger">Nu a stat</button></form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endfor %}
+{% endblock %}

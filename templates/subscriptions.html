@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Abonamente</h1>
+<form class="card grid" method="post">
+  <input type="hidden" name="mode" value="create">
+  <label>Nume <input name="name" required></label>
+  <label>Data nasterii <input type="date" name="birth_date" required></label>
+  <label>Telefon <input name="phone"></label>
+  <label>Ore
+    <select name="hours"><option>5</option><option>10</option><option>20</option></select>
+  </label>
+  <label><input type="checkbox" name="is_sibling"> Frate</label>
+  <label>Fratele cui <input name="sibling_of"></label>
+  <label>Suma <input type="number" step="0.01" name="amount" required></label>
+  <label>Metoda
+    <select name="payment_method"><option value="cash">cash</option><option value="card">card</option><option value="mixt">mixt</option></select>
+  </label>
+  <label>Cash <input type="number" step="0.01" name="paid_cash"></label>
+  <label>Card <input type="number" step="0.01" name="paid_card"></label>
+  <button class="btn">Creare abonament</button>
+</form>
+<form method="get" class="row"><input name="q" placeholder="cautare"><button class="btn">Cauta</button></form>
+<table>
+  <tr><th>Copil</th><th>Total</th><th>Folosit</th><th>Ramas</th><th>Actiuni</th></tr>
+  {% for s in subs %}
+  <tr>
+    <td>{{ s.child_name }} {% if s.is_sibling %}(frate de {{ s.sibling_of }}){% endif %}</td>
+    <td>{{ format_duration(s.total_minutes) }}</td>
+    <td>{{ format_duration(s.used_minutes) }}</td>
+    <td>{{ format_duration(s.total_minutes-s.used_minutes if s.total_minutes>s.used_minutes else 0) }}</td>
+    <td>
+      <form method="post" action="{{ url_for('checkin_subscription', sub_id=s.id) }}"><button class="btn tiny">Check-in abonament</button></form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

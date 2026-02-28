@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Total sfarsit de zi</h1>
+<div class="card">
+  <p>Total incasari: <strong>{{ '%.2f'|format(total) }} lei</strong></p>
+  <p>Total cash: {{ '%.2f'|format(cash) }} lei</p>
+  <p>Total card: {{ '%.2f'|format(card) }} lei</p>
+  <p>Total mixt (declarat): {{ '%.2f'|format(mixed_amount) }} lei</p>
+</div>
+{% endblock %}

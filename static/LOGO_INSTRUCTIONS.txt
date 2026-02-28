@@ -1,0 +1,9 @@
+Pune aici fisierul tau oficial de logo cu numele exact:
+
+logo.png
+
+Cale completa:
+static/logo.png
+
+Aplicatia va incerca intai sa afiseze acest PNG.
+Daca lipseste, va folosi automat fallback-ul: static/hoppa-logo.svg
